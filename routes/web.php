@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EarningsController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ProjectUpdateController;
 use App\Http\Controllers\Auth\LoginController;
@@ -30,6 +33,16 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
 
+    Route::get('earnings', [EarningsController::class, 'index'])->name('earnings.index');
+    Route::get('earnings/{year}/{month}', [EarningsController::class, 'show'])
+        ->where(['year' => '[0-9]{4}', 'month' => '0?[1-9]|1[0-2]'])
+        ->name('earnings.show');
+
+    Route::resource('admins', AdminUserController::class)
+        ->parameters(['admins' => 'user'])
+        ->except(['show'])
+        ->middlewareFor(['store', 'update', 'destroy'], 'throttle:admin-writes');
+
     Route::resource('clients', ClientController::class)
         ->except(['show'])
         ->middlewareFor(['store', 'update', 'destroy'], 'throttle:admin-writes');
@@ -44,6 +57,18 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): v
     Route::post('projects/{project}/updates', [ProjectUpdateController::class, 'store'])
         ->middleware('throttle:admin-writes')
         ->name('projects.updates.store');
+
+    Route::patch('projects/{project}/updates/{update}', [ProjectUpdateController::class, 'update'])
+        ->middleware('throttle:admin-writes')
+        ->name('projects.updates.update');
+
+    Route::post('projects/{project}/payments', [PaymentController::class, 'store'])
+        ->middleware('throttle:admin-writes')
+        ->name('projects.payments.store');
+
+    Route::delete('projects/{project}/payments/{payment}', [PaymentController::class, 'destroy'])
+        ->middleware('throttle:admin-writes')
+        ->name('projects.payments.destroy');
 });
 
 Route::get('/status/{access_token}', [ProjectStatusController::class, 'show'])

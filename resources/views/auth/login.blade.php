@@ -6,14 +6,19 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Giriş · {{ config('app.name') }}</title>
         @include('partials.theme-init')
+        @include('partials.fa')
+        @include('partials.outfit')
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-[#f4f0e8] text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+    <body class="font-outfit min-h-screen bg-[#f4f0e8] text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
         <header class="sticky top-0 z-20 border-b border-stone-200/80 bg-[#f4f0e8]/80 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/70">
             <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
                 <div>
-                    <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-teal-700 dark:text-teal-400">Yönetim paneli</p>
+                <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-teal-700 dark:text-teal-400">
+                    <i class="fa-solid fa-shield-halved mr-1"></i>
+                    Yönetim paneli
+                </p>
                     <p class="text-sm font-semibold">{{ config('app.name') }}</p>
                 </div>
                 @include('partials.theme-toggle')
@@ -33,15 +38,15 @@
                 </p>
                 <ul class="relative mt-10 space-y-3 text-sm text-slate-200">
                     <li class="flex items-center gap-3">
-                        <span class="h-1.5 w-1.5 rounded-full bg-teal-400"></span>
+                        <i class="fa-solid fa-key text-teal-400"></i>
                         Benzersiz ve tahmin edilemez erişim anahtarı
                     </li>
                     <li class="flex items-center gap-3">
-                        <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>
+                        <i class="fa-solid fa-timeline text-amber-300"></i>
                         Zaman çizelgesi ile adım adım ilerleme
                     </li>
                     <li class="flex items-center gap-3">
-                        <span class="h-1.5 w-1.5 rounded-full bg-sky-300"></span>
+                        <i class="fa-solid fa-lock text-sky-300"></i>
                         Yöneticiye özel iç notlar
                     </li>
                 </ul>
@@ -49,14 +54,20 @@
 
             <section class="animate-fade-up mx-auto w-full max-w-md">
                 <div class="rounded-[1.75rem] border border-stone-200/80 bg-white p-8 shadow-lg shadow-stone-900/5 dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/30">
-                    <h2 class="text-2xl font-semibold tracking-tight">Giriş yapın</h2>
+                    <h2 class="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+                        <i class="fa-solid fa-right-to-bracket text-teal-600 dark:text-teal-400"></i>
+                        Giriş yapın
+                    </h2>
                     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Yönetici hesabınızla devam edin.</p>
 
                     <form method="POST" action="{{ route('login.store') }}" class="mt-8 space-y-5">
                         @csrf
 
                         <div>
-                            <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">E-posta</label>
+                            <label for="email" class="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <i class="fa-regular fa-envelope"></i>
+                                E-posta
+                            </label>
                             <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
                                 class="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none transition focus:border-teal-400 focus:bg-white focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-slate-950">
                             @error('email')
@@ -65,7 +76,10 @@
                         </div>
 
                         <div>
-                            <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Şifre</label>
+                            <label for="password" class="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <i class="fa-solid fa-lock"></i>
+                                Şifre
+                            </label>
                             <input id="password" name="password" type="password" required
                                 class="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm outline-none transition focus:border-teal-400 focus:bg-white focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-slate-950">
                         </div>
@@ -75,7 +89,8 @@
                             Beni hatırla
                         </label>
 
-                        <button type="submit" class="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/20 active:translate-y-0 dark:bg-teal-400 dark:text-slate-950 dark:hover:bg-teal-300">
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/20 active:translate-y-0 dark:bg-teal-400 dark:text-slate-950 dark:hover:bg-teal-300">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
                             Giriş yap
                         </button>
                     </form>

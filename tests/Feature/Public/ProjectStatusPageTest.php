@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\Payment;
 use App\Models\Project;
 use App\Models\ProjectUpdate;
 use App\Models\User;
+use App\Support\Money;
 
 test('geçerli token ile müşteri sayfası açılır', function () {
     $project = Project::factory()->create(['title' => 'Canlı Proje']);
@@ -36,6 +38,23 @@ test('müşteri yalnızca herkese açık güncellemeleri görür', function () {
         ->assertOk()
         ->assertSee('Yayına alındı')
         ->assertDontSee('İç not gizli kalmalı');
+});
+
+test('müşteri ekranı bütçe ve tahsilatı göstermez', function () {
+    $project = Project::factory()->create(['agreed_budget' => 99999.99]);
+
+    Payment::factory()->for($project)->create([
+        'amount' => 12345.67,
+        'note' => 'Kapora gizli tutar',
+    ]);
+
+    $this->get(route('status.show', $project->access_token))
+        ->assertOk()
+        ->assertDontSee('Kapora gizli tutar')
+        ->assertDontSee(Money::format('99999.99'), false)
+        ->assertDontSee(Money::format('12345.67'), false)
+        ->assertDontSee('Anlaşılan')
+        ->assertDontSee('Tahsilat');
 });
 
 test('müşteri ekranı yazma işlemi sunmaz', function () {

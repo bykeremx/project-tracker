@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $start_date
  * @property Carbon $target_completion_date
  * @property Carbon|null $actual_completion_date
+ * @property string|null $agreed_budget
  */
 #[Fillable([
     'client_id',
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
     'start_date',
     'target_completion_date',
     'actual_completion_date',
+    'agreed_budget',
 ])]
 class Project extends Model
 {
@@ -51,6 +53,7 @@ class Project extends Model
             'start_date' => 'date',
             'target_completion_date' => 'date',
             'actual_completion_date' => 'date',
+            'agreed_budget' => 'decimal:2',
         ];
     }
 
@@ -70,8 +73,46 @@ class Project extends Model
         return $this->hasMany(ProjectUpdate::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function publicStatusUrl(): string
     {
         return route('status.show', $this->access_token);
+    }
+
+    /**
+     * withSum veya yüklü ilişki varsa ekstra sorgu atılmaz.
+     */
+    public function collectedAmount(): string
+    {
+        if (array_key_exists('payments_sum_amount', $this->attributes)) {
+            return $this->normalizeAmount($this->attributes['payments_sum_amount'] ?? 0);
+        }
+
+        if ($this->relationLoaded('payments')) {
+            return $this->normalizeAmount($this->payments->sum('amount'));
+        }
+
+        return $this->normalizeAmount($this->payments()->sum('amount'));
+    }
+
+    public function remainingAmount(): ?string
+    {
+        if ($this->agreed_budget === null) {
+            return null;
+        }
+
+        return $this->normalizeAmount((float) $this->agreed_budget - (float) $this->collectedAmount());
+    }
+
+    private function normalizeAmount(string|int|float $amount): string
+    {
+        return number_format((float) $amount, 2, '.', '');
     }
 }

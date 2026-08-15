@@ -28,6 +28,7 @@ class ProjectController extends Controller
         $projects = Project::query()
             ->with('client:id,name,company_name')
             ->withCount('updates')
+            ->withSum('payments', 'amount')
             ->when($request->integer('client_id'), fn ($query, $clientId) => $query->where('client_id', $clientId))
             ->latest()
             ->paginate(15)
@@ -60,7 +61,10 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
-        $project->load('client');
+        $project->load([
+            'client',
+            'payments' => fn ($query) => $query->latest('paid_on')->latest('id'),
+        ]);
 
         return view('admin.projects.show', [
             'project' => $project,

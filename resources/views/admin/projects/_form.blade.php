@@ -23,3 +23,8 @@
         <input id="target_completion_date" name="target_completion_date" type="date" value="{{ old('target_completion_date', isset($project) ? $project->target_completion_date->format('Y-m-d') : '') }}" required class="form-input">
     </div>
 </div>
+<div>
+    <label for="agreed_budget" class="mb-1.5 block text-sm font-medium">Anlaşılan bütçe (TL)</label>
+    <input id="agreed_budget" name="agreed_budget" type="number" min="0" step="0.01" value="{{ old('agreed_budget', isset($project) ? $project->agreed_budget : '') }}" class="form-input" placeholder="Örn. 45000">
+    <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Boş bırakılabilir. Tahsilatlar bu tutardan düşülür.</p>
+</div>

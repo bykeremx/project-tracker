@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * Müşteri modeli.
@@ -34,5 +35,13 @@ class Client extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * @return HasManyThrough<Payment, Project, $this>
+     */
+    public function payments(): HasManyThrough
+    {
+        return $this->hasManyThrough(Payment::class, Project::class);
     }
 }

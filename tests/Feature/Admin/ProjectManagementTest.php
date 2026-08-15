@@ -90,6 +90,45 @@ test('projeye güncelleme eklenebilir', function () {
     ]);
 });
 
+test('güncellemenin durum tipi ve görünürlüğü değiştirilebilir', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $update = $project->updates()->create([
+        'title' => 'API geliştirildi',
+        'description' => 'Kimlik doğrulama tamamlandı.',
+        'status_type' => UpdateStatusType::Completed,
+        'is_public' => true,
+    ]);
+
+    $this->actingAs($user)
+        ->patch(route('admin.projects.updates.update', [$project, $update]), [
+            'status_type' => UpdateStatusType::Blocked->value,
+        ])
+        ->assertRedirect(route('admin.projects.show', $project));
+
+    $update->refresh();
+
+    expect($update->status_type)->toBe(UpdateStatusType::Blocked)
+        ->and($update->is_public)->toBeFalse();
+});
+
+test('başka projeye ait güncelleme güncellenemez', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $otherUpdate = Project::factory()->create()->updates()->create([
+        'title' => 'Yabancı kayıt',
+        'status_type' => UpdateStatusType::Info,
+        'is_public' => true,
+    ]);
+
+    $this->actingAs($user)
+        ->patch(route('admin.projects.updates.update', [$project, $otherUpdate]), [
+            'status_type' => UpdateStatusType::Blocked->value,
+            'is_public' => '1',
+        ])
+        ->assertNotFound();
+});
+
 test('token formdan gönderilse bile sistem kendi tokenını üretir', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();

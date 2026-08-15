@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Enums\ProjectStatus;
 use App\Enums\UpdateStatusType;
 use App\Models\Client;
+use App\Models\Payment;
 use App\Models\Project;
 use App\Models\ProjectUpdate;
 use App\Models\User;
@@ -38,6 +39,21 @@ class DatabaseSeeder extends Seeder
             'status' => ProjectStatus::InProgress,
             'start_date' => now()->subDays(21)->toDateString(),
             'target_completion_date' => now()->addDays(14)->toDateString(),
+            'agreed_budget' => 45000,
+        ]);
+
+        Payment::query()->create([
+            'project_id' => $project->id,
+            'amount' => 15000,
+            'paid_on' => now()->subMonth()->toDateString(),
+            'note' => 'Kapora',
+        ]);
+
+        Payment::query()->create([
+            'project_id' => $project->id,
+            'amount' => 10000,
+            'paid_on' => now()->toDateString(),
+            'note' => 'Ara ödeme',
         ]);
 
         $steps = [

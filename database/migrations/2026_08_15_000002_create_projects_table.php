@@ -34,6 +34,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('target_completion_date');
             $table->date('actual_completion_date')->nullable();
+            $table->decimal('agreed_budget', 12, 2)->nullable();
             $table->timestamps();
         });
     }

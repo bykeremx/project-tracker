@@ -18,7 +18,7 @@ final class CreateProjectAction
     ) {}
 
     /**
-     * @param  array{client_id: int, title: string, start_date: string, target_completion_date: string}  $data
+     * @param  array{client_id: int, title: string, start_date: string, target_completion_date: string, agreed_budget?: string|null}  $data
      */
     public function execute(array $data): Project
     {
@@ -28,6 +28,7 @@ final class CreateProjectAction
             'status' => ProjectStatus::InProgress,
             'start_date' => $data['start_date'],
             'target_completion_date' => $data['target_completion_date'],
+            'agreed_budget' => $data['agreed_budget'] ?? null,
         ]);
 
         // access_token fillable değildir; yalnızca burada yazılır.

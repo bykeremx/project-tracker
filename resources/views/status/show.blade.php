@@ -19,16 +19,17 @@
                 <div>
                     <p class="text-xs uppercase tracking-wide text-slate-400">Durum</p>
                     <p class="mt-1">
-                        <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $project->status->badgeClasses() }}">
-                            {{ $project->status->label() }}
-                        </span>
+                        @include('partials.status-badge', ['status' => $project->status])
                     </p>
                 </div>
             </div>
         </header>
 
         <section class="mt-12">
-            <h2 class="text-lg font-semibold">Gelişmeler</h2>
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+                <i class="fa-solid fa-timeline text-teal-600 dark:text-teal-400"></i>
+                Gelişmeler
+            </h2>
             <div
                 id="timeline"
                 class="relative mt-8 space-y-6 before:absolute before:top-2 before:bottom-2 before:left-[11px] before:w-px before:bg-slate-200 dark:before:bg-white/10"

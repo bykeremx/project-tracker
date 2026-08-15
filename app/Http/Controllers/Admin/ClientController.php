@@ -23,6 +23,8 @@ class ClientController extends Controller
         $clients = Client::query()
             ->with(['projects' => fn ($query) => $query->latest()->select('id', 'client_id', 'title', 'status', 'created_at')])
             ->withCount('projects')
+            ->withSum('projects', 'agreed_budget')
+            ->withSum('payments', 'amount')
             ->latest()
             ->paginate(15);
 

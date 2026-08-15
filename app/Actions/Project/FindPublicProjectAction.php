@@ -13,6 +13,7 @@ use App\Models\Project;
  * Index: idx_access_token UNIQUE → const/ref lookup, full scan yok.
  *
  * client ilişkisi eager load edilir (N+1 yok).
+ * agreed_budget ve payments kasıtlı olarak seçilmez; müşteri parayı görmez.
  * Gizli güncellemeler burada çekilmez; timeline ayrı serviste publicOnly=true ile gelir.
  */
 final class FindPublicProjectAction

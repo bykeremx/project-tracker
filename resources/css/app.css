@@ -8,6 +8,7 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-outfit: 'Outfit', ui-sans-serif, system-ui, sans-serif;
     --animate-fade-up: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
     --animate-slide-in: slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
     --animate-pop: pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -86,10 +87,86 @@
     }
 
     .form-input {
-        @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-slate-950;
+        @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-teal-400;
+    }
+
+    .form-input option {
+        @apply bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100;
     }
 
     .login-orb {
         animation: drift 12s ease-in-out infinite;
+    }
+}
+
+#admin-sidebar {
+    font-family: var(--font-outfit);
+    width: 16rem;
+    overflow: hidden;
+    will-change: width, transform;
+    transition:
+        width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#admin-sidebar-inner {
+    width: 16rem;
+    min-width: 16rem;
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+        opacity 0.28s ease,
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#admin-sidebar-overlay {
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(0);
+    transition:
+        opacity 0.4s ease,
+        backdrop-filter 0.4s ease;
+}
+
+#admin-sidebar-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    backdrop-filter: blur(2px);
+}
+
+[data-sidebar-icon] {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.sidebar-collapsed [data-sidebar-icon] {
+    transform: rotate(90deg);
+}
+
+@media (max-width: 1023.98px) {
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    #admin-sidebar {
+        width: 16rem;
+        transform: translateX(-100%);
+    }
+
+    #admin-sidebar.is-open {
+        transform: translateX(0);
+        box-shadow: 18px 0 40px rgb(2 6 23 / 0.35);
+    }
+}
+
+@media (min-width: 1024px) {
+    html.sidebar-collapsed #admin-sidebar {
+        width: 0;
+    }
+
+    html.sidebar-collapsed #admin-sidebar-inner {
+        opacity: 0;
+        transform: translateX(-14px);
+        pointer-events: none;
     }
 }

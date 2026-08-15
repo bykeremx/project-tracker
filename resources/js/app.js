@@ -23,10 +23,79 @@ function initThemeToggle() {
     });
 }
 
+function isDesktopSidebar() {
+    return window.matchMedia('(min-width: 1024px)').matches;
+}
+
+function setMobileSidebar(open) {
+    const sidebar = document.getElementById('admin-sidebar');
+    const overlay = document.getElementById('admin-sidebar-overlay');
+
+    sidebar?.classList.toggle('is-open', open);
+    overlay?.classList.toggle('is-visible', open);
+    document.body.classList.toggle('sidebar-open', open);
+    syncSidebarToggles();
+}
+
+function syncSidebarToggles() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const expanded = isDesktopSidebar()
+        ? !document.documentElement.classList.contains('sidebar-collapsed')
+        : Boolean(sidebar?.classList.contains('is-open'));
+
+    document.querySelectorAll('[data-sidebar-toggle]').forEach((button) => {
+        button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+}
+
+function initSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const overlay = document.getElementById('admin-sidebar-overlay');
+
+    if (!sidebar) {
+        return;
+    }
+
+    syncSidebarToggles();
+
+    document.querySelectorAll('[data-sidebar-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            if (isDesktopSidebar()) {
+                const collapsed = !document.documentElement.classList.contains('sidebar-collapsed');
+                document.documentElement.classList.toggle('sidebar-collapsed', collapsed);
+                window.localStorage.setItem('sidebar-collapsed', collapsed ? '1' : '0');
+                syncSidebarToggles();
+                return;
+            }
+
+            setMobileSidebar(!sidebar.classList.contains('is-open'));
+        });
+    });
+
+    sidebar.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+            if (!isDesktopSidebar()) {
+                setMobileSidebar(false);
+            }
+        });
+    });
+
+    overlay?.addEventListener('click', () => setMobileSidebar(false));
+
+    window.addEventListener('resize', () => {
+        if (isDesktopSidebar()) {
+            setMobileSidebar(false);
+        }
+
+        syncSidebarToggles();
+    });
+}
+
 function initCopyButtons() {
     document.querySelectorAll('[data-copy-link]').forEach((button) => {
         button.addEventListener('click', async () => {
             const value = button.getAttribute('data-copy-link');
+            const label = button.querySelector('[data-copy-text]') ?? button;
 
             if (!value) {
                 return;
@@ -34,32 +103,17 @@ function initCopyButtons() {
 
             try {
                 await navigator.clipboard.writeText(value);
-                const original = button.textContent;
-                button.textContent = 'Kopyalandı';
+                const original = label.textContent;
+                label.textContent = 'Kopyalandı';
                 button.classList.add('scale-105');
                 window.setTimeout(() => {
-                    button.textContent = original;
+                    label.textContent = original;
                     button.classList.remove('scale-105');
                 }, 1600);
             } catch {
                 window.prompt('Bağlantıyı kopyalayın:', value);
             }
         });
-    });
-}
-
-function initAdminNav() {
-    const toggle = document.getElementById('admin-nav-toggle');
-    const drawer = document.getElementById('admin-mobile-nav');
-
-    if (!toggle || !drawer) {
-        return;
-    }
-
-    toggle.addEventListener('click', () => {
-        const isOpen = !drawer.classList.contains('hidden');
-        drawer.classList.toggle('hidden', isOpen);
-        toggle.setAttribute('aria-expanded', String(!isOpen));
     });
 }
 
@@ -110,7 +164,7 @@ function initInfiniteScroll() {
 document.addEventListener('DOMContentLoaded', () => {
     applyTheme(getPreferredTheme());
     initThemeToggle();
+    initSidebar();
     initCopyButtons();
-    initAdminNav();
     initInfiniteScroll();
 });

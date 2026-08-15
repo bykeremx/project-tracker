@@ -24,6 +24,7 @@ class UpdateProjectRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'target_completion_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'agreed_budget' => ['nullable', 'numeric', 'min:0', 'decimal:0,2', 'max:9999999999.99'],
         ];
     }
 
@@ -39,6 +40,15 @@ class UpdateProjectRequest extends FormRequest
             'start_date.required' => 'Başlangıç tarihi zorunludur.',
             'target_completion_date.required' => 'Tahmini bitiş tarihi zorunludur.',
             'target_completion_date.after_or_equal' => 'Bitiş tarihi başlangıçtan önce olamaz.',
+            'agreed_budget.numeric' => 'Anlaşılan bütçe sayı olmalıdır.',
+            'agreed_budget.min' => 'Anlaşılan bütçe negatif olamaz.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('agreed_budget') === '') {
+            $this->merge(['agreed_budget' => null]);
+        }
     }
 }

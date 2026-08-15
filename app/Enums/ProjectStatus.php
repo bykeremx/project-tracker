@@ -28,6 +28,16 @@ enum ProjectStatus: string
         };
     }
 
+    public function icon(): string
+    {
+        return match ($this) {
+            self::Draft => 'fa-regular fa-file-lines',
+            self::InProgress => 'fa-solid fa-spinner',
+            self::Completed => 'fa-solid fa-circle-check',
+            self::OnHold => 'fa-solid fa-pause',
+        };
+    }
+
     public function badgeClasses(): string
     {
         return match ($this) {
