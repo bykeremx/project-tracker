@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Schema;
  *   Composite index hem filtreyi hem sıralamayı karşılar; filesort olmaz.
  *   Cursor pagination `WHERE id < cursor` ile aynı indexi kullanır.
  *
+ * Index: idx_project_public_created (project_id, is_public, id DESC)
+ *   Müşteri feed: WHERE project_id = ? AND is_public = 1 ORDER BY id DESC.
+ *
  * MySQL'de DESC index, SQLite testlerinde düz (project_id, id) index kullanılır.
  * SQLite B-Tree geriye doğru taranabildiği için ORDER BY id DESC yine index'e oturur.
  */
@@ -43,9 +46,13 @@ return new class extends Migration
             Schema::getConnection()->statement(
                 'CREATE INDEX idx_project_created ON project_updates (project_id, id DESC)'
             );
+            Schema::getConnection()->statement(
+                'CREATE INDEX idx_project_public_created ON project_updates (project_id, is_public, id DESC)'
+            );
         } else {
             Schema::table('project_updates', function (Blueprint $table) {
                 $table->index(['project_id', 'id'], 'idx_project_created');
+                $table->index(['project_id', 'is_public', 'id'], 'idx_project_public_created');
             });
         }
     }

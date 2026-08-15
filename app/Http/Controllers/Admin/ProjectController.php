@@ -30,7 +30,7 @@ class ProjectController extends Controller
             ->withCount('updates')
             ->withSum('payments', 'amount')
             ->when($request->integer('client_id'), fn ($query, $clientId) => $query->where('client_id', $clientId))
-            ->latest()
+            ->latest('id')
             ->paginate(15)
             ->withQueryString();
 

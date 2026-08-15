@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Müşteri ana kaydı. Projeler bu tabloya bağlanır.
  *
- * Index analizi: Listeleme `id` PK üzerinden yapılır (B-Tree clustered).
- * İsim/e-posta araması şimdilik tam tarama yapabilir; hacim küçükken
- * kabul edilebilir. İleride arama gerekirse name/email için ayrı index eklenir.
+ * Index: idx_clients_name
+ *   Proje formunda ORDER BY name.
+ * Listeleme latest('id') PK kullanır; ayrı created_at index gerekmez.
  */
 return new class extends Migration
 {
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('company_name')->nullable();
             $table->timestamps();
+
+            $table->index('name', 'idx_clients_name');
         });
     }
 

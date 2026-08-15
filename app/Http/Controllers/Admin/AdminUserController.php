@@ -21,7 +21,7 @@ class AdminUserController extends Controller
         $this->authorize('viewAny', User::class);
 
         $admins = User::query()
-            ->latest()
+            ->latest('id')
             ->paginate(15);
 
         return view('admin.admins.index', compact('admins'));

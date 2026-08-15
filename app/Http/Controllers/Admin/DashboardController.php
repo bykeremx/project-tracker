@@ -35,13 +35,18 @@ class DashboardController extends Controller
             ...array_map(fn (array $row): float => (float) $row['total'], $chartMonths),
         ]);
 
+        $statusCounts = Project::query()
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
         return view('admin.dashboard', [
             'greeting' => $greeting,
             'clientCount' => Client::query()->count(),
             'projectCount' => Project::query()->count(),
             'adminCount' => User::query()->count(),
-            'inProgressCount' => Project::query()->where('status', ProjectStatus::InProgress)->count(),
-            'completedCount' => Project::query()->where('status', ProjectStatus::Completed)->count(),
+            'inProgressCount' => (int) ($statusCounts[ProjectStatus::InProgress->value] ?? 0),
+            'completedCount' => (int) ($statusCounts[ProjectStatus::Completed->value] ?? 0),
             'monthEarned' => $earnings->monthTotal(),
             'yearEarned' => $earnings->yearTotal(),
             'outstandingTotal' => $earnings->outstandingTotal(),
@@ -50,7 +55,7 @@ class DashboardController extends Controller
             'chartMax' => $chartMax,
             'recentProjects' => Project::query()
                 ->with('client:id,name')
-                ->latest()
+                ->latest('id')
                 ->limit(5)
                 ->get(),
         ]);

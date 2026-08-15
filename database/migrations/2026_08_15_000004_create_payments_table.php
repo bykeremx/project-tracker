@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Schema;
  * Index: idx_project_paid_on (project_id, paid_on)
  *   Proje sayfasında "bu işe ait ödemeler, tarihe göre" sorgusu.
  *
- * Index: idx_paid_on
- *   Dashboard: WHERE paid_on BETWEEN ay_başı AND ay_sonu.
+ * Index: idx_paid_on (paid_on, id)
+ *   Dashboard ve ay detayı: WHERE paid_on BETWEEN ? AND ? ORDER BY paid_on DESC, id DESC.
  */
 return new class extends Migration
 {
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['project_id', 'paid_on'], 'idx_project_paid_on');
-            $table->index('paid_on', 'idx_paid_on');
+            $table->index(['paid_on', 'id'], 'idx_paid_on');
         });
     }
 

@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Schema;
  * Index: client_id (FK)
  *   Admin panelinde müşteriye göre proje listesi ve CASCADE silme için.
  *
+ * Index: idx_projects_client_id (client_id, id)
+ *   ?client_id= filtre + latest('id') aynı index seek.
+ *
+ * Index: idx_projects_status
+ *   Dashboard COUNT / GROUP BY status. PK latest('id') listeler.
+ *
  * Durum kolonu string tutulur (PHP enum ile eşleşir). Native MySQL ENUM
  * yerine string tercih edilir: SQLite testleri çalışır, yeni durum eklemek
  * ALTER TABLE gerektirmez.
@@ -36,6 +42,9 @@ return new class extends Migration
             $table->date('actual_completion_date')->nullable();
             $table->decimal('agreed_budget', 12, 2)->nullable();
             $table->timestamps();
+
+            $table->index(['client_id', 'id'], 'idx_projects_client_id');
+            $table->index('status', 'idx_projects_status');
         });
     }
 

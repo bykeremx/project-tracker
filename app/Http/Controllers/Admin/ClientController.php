@@ -21,11 +21,11 @@ class ClientController extends Controller
         $this->authorize('viewAny', Client::class);
 
         $clients = Client::query()
-            ->with(['projects' => fn ($query) => $query->latest()->select('id', 'client_id', 'title', 'status', 'created_at')])
+            ->with(['projects' => fn ($query) => $query->latest('id')->select('id', 'client_id', 'title', 'status', 'created_at')])
             ->withCount('projects')
             ->withSum('projects', 'agreed_budget')
             ->withSum('payments', 'amount')
-            ->latest()
+            ->latest('id')
             ->paginate(15);
 
         return view('admin.clients.index', compact('clients'));
