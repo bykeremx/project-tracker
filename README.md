@@ -1,58 +1,231 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Proje Takip / Project Tracker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[Türkçe](#türkçe) · [English](#english)
 
-## About Laravel
+Müşteri projelerinin durumunu yönetmek ve müşteriye özel canlı bağlantı ile paylaşmak için Laravel uygulaması.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Türkçe
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Teknoloji
 
-## Learning Laravel
+| Katman | Sürüm |
+|--------|--------|
+| PHP | 8.3+ |
+| Laravel | 13 (`^13.17`) |
+| Veritabanı | MySQL 8 |
+| Ön yüz | Blade, Tailwind CSS 4, Vite 8 |
+| Test | Pest 5 |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+İş mantığı controller’da durmaz: Form Request + Action / Service. Sorgular eager load ve `cursorPaginate` kullanır.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Ne işe yarar
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+İki yüzey vardır:
 
-## Agentic Development
+- **Admin paneli** (`/admin`, giriş zorunlu): müşteriler, projeler, zaman çizelgesi, tahsilat, yöneticiler.
+- **Müşteri sayfası** (`/status/{access_token}`): salt okunur. Yalnızca `is_public = true` güncellemeler görünür. Bütçe ve tahsilat çıkmaz.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Proje oluşturulunca 64 karakterlik rastgele `access_token` üretilir; formdan token yazılamaz.
 
-```bash
-composer require laravel/boost --dev
+### Proje yapısı (özet)
 
-php artisan boost:install
+```
+app/
+  Actions/          İş kuralları (oluştur, güncelle, sil, token üret)
+  Enums/            ProjectStatus, UpdateStatusType
+  Http/
+    Controllers/    İnce HTTP katmanı (Admin, Auth, Status)
+    Requests/       Doğrulama
+  Models/           User, Client, Project, ProjectUpdate, Payment
+  Policies/         Yetki
+  Services/         Timeline (cursor), kazanç özetleri
+  Support/          Para formatı
+database/
+  migrations/       Şema + index’ler
+  seeders/          Örnek yönetici ve proje
+resources/
+  views/            Admin, giriş, müşteri ekranı
+routes/web.php      Tüm HTTP rotaları
+tests/Feature/      Pest senaryoları
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**Veri modeli (kısa):** `users` → yöneticiler. `clients` → müşteriler. `projects` → iş + `agreed_budget` + `access_token`. `project_updates` → zaman çizelgesi. `payments` → tahsilat; aylık kazanç bu satırlardan hesaplanır.
 
-## Contributing
+### Yerelde çalıştırma
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Gereksinimler: PHP 8.3+, Composer, Node.js 20+, MySQL 8.
 
-## Code of Conduct
+```bash
+git clone <repo-url>
+cd project-tracker
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+`.env` içinde MySQL ayarlarını doldurun:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project_tracker_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## License
+Veritabanını oluşturun, sonra:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate --seed
+npm install
+npm run build
+php artisan serve
+```
+
+Geliştirme (sunucu + Vite birlikte):
+
+```bash
+composer run dev
+```
+
+Uygulama: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Demo hesap
+
+| Alan | Değer |
+|------|--------|
+| E-posta | `admin@example.com` |
+| Şifre | `password` |
+
+Seeder örnek müşteri, proje, güncelleme ve tahsilat da ekler.
+
+### Test
+
+```bash
+php artisan test
+```
+
+Testler bellek-içi SQLite kullanır; MySQL’e dokunmaz.
+
+### Önemli güvenlik notları
+
+- Müşteri URL’si tahmin edilemez token ile açılır; yazma yoktur.
+- Gizli notlar (`is_public = false`) public sorguda hiç çekilmez.
+- Admin yazma işlemleri `throttle:admin-writes` (20/dk) ile sınırlıdır. Giriş `throttle:5,1`.
+
+---
+
+## English
+
+### Stack
+
+| Layer | Version |
+|--------|--------|
+| PHP | 8.3+ |
+| Laravel | 13 (`^13.17`) |
+| Database | MySQL 8 |
+| Frontend | Blade, Tailwind CSS 4, Vite 8 |
+| Tests | Pest 5 |
+
+Business rules live in Actions / Services, not controllers. Validation uses Form Requests. Queries use eager loading and `cursorPaginate`.
+
+### What it does
+
+Two surfaces:
+
+- **Admin panel** (`/admin`, auth required): clients, projects, timeline, collections, admin users.
+- **Client status page** (`/status/{access_token}`): read-only. Only `is_public = true` updates are shown. Budget and payments never appear.
+
+On create, each project gets a 64-character random `access_token`. Tokens cannot be set from the form.
+
+### Project structure (summary)
+
+```
+app/
+  Actions/          Use cases (create, update, delete, token generation)
+  Enums/            ProjectStatus, UpdateStatusType
+  Http/
+    Controllers/    Thin HTTP layer (Admin, Auth, Status)
+    Requests/       Validation
+  Models/           User, Client, Project, ProjectUpdate, Payment
+  Policies/         Authorization
+  Services/         Timeline (cursor) and earnings totals
+  Support/          Money formatting
+database/
+  migrations/       Schema + indexes
+  seeders/          Sample admin and project
+resources/
+  views/            Admin, login, public status
+routes/web.php      HTTP routes
+tests/Feature/      Pest feature tests
+```
+
+**Data model (short):** `users` are admins. `clients` hold customers. `projects` hold work plus `agreed_budget` and `access_token`. `project_updates` is the timeline. `payments` is the ledger; monthly earnings are summed from these rows.
+
+### Run locally
+
+Requirements: PHP 8.3+, Composer, Node.js 20+, MySQL 8.
+
+```bash
+git clone <repo-url>
+cd project-tracker
+
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+Set MySQL in `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project_tracker_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Create the database, then:
+
+```bash
+php artisan migrate --seed
+npm install
+npm run build
+php artisan serve
+```
+
+Dev (server + Vite together):
+
+```bash
+composer run dev
+```
+
+App: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Demo account
+
+| Field | Value |
+|------|--------|
+| Email | `admin@example.com` |
+| Password | `password` |
+
+The seeder also adds a sample client, project, timeline steps, and payments.
+
+### Tests
+
+```bash
+php artisan test
+```
+
+Tests run on in-memory SQLite and do not touch MySQL.
+
+### Security notes
+
+- The client URL is a random token and is read-only.
+- Private notes (`is_public = false`) are excluded from public queries.
+- Admin writes are limited by `throttle:admin-writes` (20/min). Login is `throttle:5,1`.
