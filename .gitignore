@@ -5,6 +5,9 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+.cursorrules
+.project.md
+.cursorignore
 /.codex
 /.cursor/
 /.idea
@@ -25,8 +28,6 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/.cursorrules
-/.project
-/.cursorignore
+
 
 
