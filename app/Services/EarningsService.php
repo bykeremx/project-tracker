@@ -33,8 +33,8 @@ final class EarningsService
 
         $total = Payment::query()
             ->whereBetween('paid_on', [
-                Carbon::create($year, 1, 1)?->toDateString(),
-                Carbon::create($year, 12, 31)?->toDateString(),
+                Carbon::create($year, 1,1)?->toDateString(), // 2026 'nın ilk günü ()
+                Carbon::create($year, 12, 31)?->toDateString(), // 2026 'nın son günü (31 aralık 2026)
             ])
             ->sum('amount');
 

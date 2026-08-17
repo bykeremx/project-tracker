@@ -9,6 +9,10 @@ namespace App\Enums;
  *
  * Proje genel durumundan (ProjectStatus) ayrı tutulur: bir proje "devam ederken"
  * hem tamamlanmış adımlar hem de engeller aynı timeline'da yer alabilir.
+ * UpdatesStatusType::Completed => Tamamlandı
+ * UpdatesStatusType::InProgress => Devam Ediyor
+ * UpdatesStatusType::Blocked => Engellendi
+ * UpdatesStatusType::Info => Bilgilendirme
  */
 enum UpdateStatusType: string
 {

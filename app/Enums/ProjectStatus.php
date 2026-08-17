@@ -10,6 +10,7 @@ namespace App\Enums;
  * Neden enum?
  * Serbest string yerine sabit değerler kullanarak geçersiz durum yazılmasını
  * derleme/çalışma anında engelleriz. Blade ve Action katmanı da bu tipi paylaşır.
+ * @see https://laravel.com/docs/12.x/enums
  */
 enum ProjectStatus: string
 {

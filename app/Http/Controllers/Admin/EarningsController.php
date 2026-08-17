@@ -22,6 +22,7 @@ class EarningsController extends Controller
 
         $year = $request->integer('year') ?: (int) now()->year;
 
+
         abort_unless($year >= 2000 && $year <= 2100, 404);
 
         $years = $earnings->availableYears();
