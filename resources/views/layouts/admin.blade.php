@@ -25,36 +25,56 @@
         <div id="admin-sidebar-overlay" class="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-[2px] lg:hidden"></div>
 
         <div class="flex min-h-screen overflow-x-clip">
-            <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col bg-slate-950 text-slate-300 lg:static">
-                <div id="admin-sidebar-inner" class="flex h-full flex-col">
-                    <div class="flex items-center justify-between border-b border-white/10 px-5 py-5">
-                        <div>
-                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-teal-400">Yönetim</p>
-                            <h1 class="mt-1 text-lg font-semibold text-white">{{ config('app.name') }}</h1>
-                        </div>
+            <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-white/10 bg-slate-950 text-slate-300 lg:static">
+                <div id="admin-sidebar-inner" class="flex h-full flex-col bg-[linear-gradient(180deg,rgb(15_23_42)_0%,rgb(2_6_23)_100%)]">
+                    <div class="flex items-center justify-between border-b border-white/10 px-4 py-4">
+                        <a href="{{ route('admin.dashboard') }}" class="group flex min-w-0 items-center gap-3 rounded-xl pr-1">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-400/15 text-teal-300 ring-1 ring-teal-400/25 transition duration-200 group-hover:bg-teal-400/25">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </span>
+                            <span class="min-w-0">
+                                <span class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">Yönetim</span>
+                                <span class="mt-0.5 block truncate text-base font-semibold text-white transition group-hover:text-teal-100">{{ config('app.name') }}</span>
+                            </span>
+                        </a>
                         <button type="button" data-sidebar-toggle class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden" aria-label="Menüyü kapat" aria-expanded="true" aria-controls="admin-sidebar">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-                    <nav class="flex flex-1 flex-col gap-1 p-4 text-sm">
+                    <nav class="flex flex-1 flex-col gap-1.5 p-3" aria-label="Yönetim menüsü">
+                        <p class="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Sayfalar</p>
                         @foreach ($navItems as $item)
-                            <a href="{{ route($item['route']) }}" class="nav-link flex items-center gap-3 {{ request()->routeIs($item['match']) ? 'bg-white/10 text-white' : 'hover:bg-white/5 hover:text-white' }}">
-                                <i class="{{ $item['icon'] }} w-4 text-center text-teal-400"></i>
-                                {{ $item['label'] }}
+                            @php $active = request()->routeIs($item['match']); @endphp
+                            <a href="{{ route($item['route']) }}" class="sidebar-link {{ $active ? 'is-active' : '' }}" @if ($active) aria-current="page" @endif>
+                                @if ($active)
+                                    <span class="absolute top-[18%] bottom-[18%] left-0 w-[3px] rounded-full bg-teal-400"></span>
+                                @endif
+                                <span class="sidebar-link-icon">
+                                    <i class="{{ $item['icon'] }}"></i>
+                                </span>
+                                <span class="sidebar-link-label">{{ $item['label'] }}</span>
+                                <i class="fa-solid fa-chevron-right sidebar-link-arrow" aria-hidden="true"></i>
                             </a>
                         @endforeach
                     </nav>
-                    <form method="POST" action="{{ route('logout') }}" class="border-t border-white/10 p-4">
-                        @csrf
-                        <p class="mb-3 flex items-center gap-2 truncate text-xs text-slate-400">
-                            <i class="fa-solid fa-user"></i>
-                            {{ auth()->user()->name }}
-                        </p>
-                        <button type="submit" class="flex w-full items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-left text-sm transition hover:bg-white/5">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            Çıkış yap
-                        </button>
-                    </form>
+                    <div class="border-t border-white/10 p-3">
+                        <div class="mb-2 flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2">
+                            <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-teal-400/15 text-xs text-teal-300">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <p class="min-w-0 truncate text-xs font-medium text-slate-200">{{ auth()->user()->name }}</p>
+                        </div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="sidebar-link sidebar-link-danger w-full">
+                                <span class="sidebar-link-icon">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                </span>
+                                <span class="sidebar-link-label">Çıkış yap</span>
+                                <i class="fa-solid fa-chevron-right sidebar-link-arrow" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </aside>
 

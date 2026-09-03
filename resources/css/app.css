@@ -78,6 +78,59 @@
         @apply rounded-xl px-3 py-2 text-sm font-medium transition duration-200;
     }
 
+    /* Kenar çubuğu: satırlar kart gibi dursun, tıklanabilir oldukları anlaşılsın */
+    .sidebar-link {
+        @apply relative flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-sm font-medium text-slate-300 no-underline transition duration-200 ease-out;
+    }
+
+    .sidebar-link:hover {
+        @apply border-white/20 bg-white/10 text-white;
+    }
+
+    .sidebar-link:hover .sidebar-link-icon {
+        @apply bg-teal-400/20 text-teal-300;
+    }
+
+    .sidebar-link:hover .sidebar-link-arrow {
+        @apply translate-x-0.5 text-teal-300;
+    }
+
+    .sidebar-link.is-active {
+        @apply border-teal-400/30 bg-teal-400/10 text-white;
+    }
+
+    .sidebar-link.is-active .sidebar-link-icon {
+        @apply bg-teal-400/20 text-teal-300;
+    }
+
+    .sidebar-link.is-active .sidebar-link-arrow {
+        @apply text-teal-300;
+    }
+
+    .sidebar-link-icon {
+        @apply grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[13px] text-teal-400 transition duration-200;
+    }
+
+    .sidebar-link-label {
+        @apply min-w-0 flex-1 truncate text-left;
+    }
+
+    .sidebar-link-arrow {
+        @apply text-[10px] text-slate-500 transition duration-200;
+    }
+
+    .sidebar-link-danger:hover {
+        @apply border-red-400/25 bg-red-500/10 text-red-200;
+    }
+
+    .sidebar-link-danger:hover .sidebar-link-icon {
+        @apply bg-red-500/15 text-red-300;
+    }
+
+    .sidebar-link-danger:hover .sidebar-link-arrow {
+        @apply text-red-300;
+    }
+
     .card {
         @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm transition duration-300 ease-out dark:border-white/10 dark:bg-slate-900/80;
     }
